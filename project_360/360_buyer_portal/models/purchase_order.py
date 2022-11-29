@@ -19,7 +19,6 @@ class PurchaseOrder(models.Model):
         comodel_name='vendor.edi.message',
         compute="_compute_edi_messages", string='EDI Messages', copy=False)
     last_po_status_message = fields.Datetime(string='Last PO Status Message')
-
     last_po_status_update = fields.Datetime(string="Last send PO update request", help="Pleae provide your new ETD since a delay has been reported")
     next_po_status_update = fields.Datetime(string="Next PO status update", readonly=True,
                                             help="Pleae provide your new ETD since a delay has been reported",
