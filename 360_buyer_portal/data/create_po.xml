@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="model_purchase_order_action_share" model="ir.actions.server">
+        <field name="name">Create a PO</field>
+        <field name="model_id" ref="360_buyer_portal.model_purchase_order"/>
+        <field name="binding_model_id" ref="360_buyer_portal.model_purchase_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.create_po()</field>
+    </record>
+</odoo>

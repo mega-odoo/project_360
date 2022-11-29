@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+360_buyer_portal.access_vendor_edi_message_user,access.vendor.edi.message.user,360_buyer_portal.model_vendor_edi_message,360_buyer_portal.group_vendor_edi_user,1,1,1,0
+360_buyer_portal.access_vendor_edi_message_manager,access.vendor.edi.message.manager,360_buyer_portal.model_vendor_edi_message,360_buyer_portal.group_vendor_edi_manager,1,1,1,1
+access_vendor_edi_message_line_user,access.vendor.edi.message.line.user,model_vendor_edi_message_line,360_buyer_portal.group_vendor_edi_user,1,1,1,0
+access_vendor_edi_message_line_manager,access.vendor.edi.message.line.manager,model_vendor_edi_message_line,360_buyer_portal.group_vendor_edi_manager,1,1,1,1

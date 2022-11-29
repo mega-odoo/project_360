@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+
+        <record id="view_purchase_order_form_inherit_360_buyer_portal" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit.360.buyer.portal</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_create_edi_message" string="Create EDI Message"
+                            class="btn btn-secondary"
+                            attrs="{'invisible': [('state','not in',['draft', 'sent'])]}"
+                            type="object"
+                            groups="360_buyer_portal.group_vendor_edi_manager"
+                    />
+                </xpath>
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                    <button type="object"  name="action_view_edi_message"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o" attrs="{'invisible':[('edi_message_count', '=', 0)]}">
+                        <field name="edi_message_count" widget="statinfo" string="EDI Messages"/>
+                        <field name='edi_message_ids' invisible="1"/>
+                    </button>
+                </xpath>
+                <xpath expr="//label[@for='date_planned']" position="before">
+                    <field name="date_departure" widget="date"/>
+                    <field name="last_po_status_message" widget="date"/>
+                    <field name="last_po_status_update" widget="date"/>
+                    <field name="next_po_status_update" widget="date"/>
+                </xpath>
+                <xpath expr="//field[@name='date_planned']" position="attributes">
+                    <attribute name="widget">date</attribute>
+                    <attribute name="string">ETA</attribute>
+                </xpath>
+                <xpath expr="//sheet//page[@name='products']//field[@name='date_planned']" position="attributes">
+                    <attribute name="string">ETA</attribute>
+                    <attribute name="optional">show</attribute>
+                    <attribute name="widget">date</attribute>
+                </xpath>
+                <xpath expr="//sheet//page[@name='products']//field[@name='date_planned']" position="after">
+                    <field name="date_departure" widget="date"/>
+                    <field name="is_completed" widget="boolean_toggle" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="purchase_order_line_compare_view_tree" model="ir.ui.view">
+            <field name="name">purchase.order.line.view.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <tree name="compare_values" string="Purchase Order Lines compare values">
+                    <field name="order_id" invisible="1"/>
+                    <field name="name" invisible="1" />
+                    <field name="partner_id" string="Vendor" invisible="1"/>
+                    <field name="product_id"/>
+                    <field name="price_unit"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom" groups="uom.group_uom"/>
+                    <field name="product_uom_category_id" invisible="1" />
+                    <field name="price_subtotal" widget="monetary" invisible="1" />
+                    <field name="currency_id" invisible="1"/>
+                    <field name="date_departure" string="ETD"  widget="date"/>
+                    <field name="date_planned" string="ETA"  widget="date"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+
+
+</odoo>

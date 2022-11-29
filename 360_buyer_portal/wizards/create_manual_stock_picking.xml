@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="view_create_stock_picking" model="ir.ui.view">
+        <field name="model">create.stock.picking.wizard</field>
+        <field name="inherit_id" ref="purchase_manual_delivery.view_create_stock_picking"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='picking_id']" position="after">
+                <field name="supplier_packlist_number" required="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="widget">date</attribute>
+                <attribute name="string">ETA</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

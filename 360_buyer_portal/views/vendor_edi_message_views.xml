@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+        <!-- Vendor EDI Message Form View -->
+        <record id="vendor_edi_message_view_form" model="ir.ui.view">
+            <field name="name">vendor.edi.message.view.form</field>
+            <field name="model">vendor.edi.message</field>
+            <field name="arch" type="xml">
+                <form string="Vendor EDI Message">
+                    <header>
+                        <button name="action_process_edi_message" string="Process EDI Message"
+                            class="btn btn-secondary"
+                            attrs="{'invisible': [('state','!=','processed')]}"
+                            type="object"
+                            groups="360_buyer_portal.group_vendor_edi_manager"
+                            />
+                        <button name="button_done" string="Mark as done" attrs="{'invisible': [('state','in',('done', 'cancel'))]}" type="object" />
+                        <button name="button_cancel" states="draft,ready,done" string="Cancel" type="object" data-hotkey="x" />
+                        <button name="button_error" string="Force Error Status" attrs="{'invisible': [('state', '=', 'error')]}" type="object" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,ready,processed,error,done" readonly="1"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            
+                        </div>
+                        <div class="oe_title">
+                            <span class="o_form_label">EDI Message </span>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="purchase_id" />
+                                <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}" placeholder="Name, TIN, Email, or Reference"/>
+                                <field name="partner_ref"/>
+                                <field name="message_type" />
+                                <field name="currency_id" groups="base.group_multi_currency" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="vendor_contact_ids" widget="many2many_tags" />
+                                <field name="company_id"  groups="base.group_multi_company"/>
+                                <field name="user_id" />
+                                <field name="qty_total" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="products" string="Products">
+                                <field name="edi_message_line_ids" readonly="1" widget="section_and_note_one2many">
+                                    <tree>
+                                        <field name="display_type" invisible="1"/>
+                                        <field name="description" required="1" widget="section_and_note_text"/>
+                                        <field name="product_id" />
+                                        <field name="product_qty" />
+                                        <field name="price_unit" />
+                                        <field name="date_departure" widget="date"/>
+                                        <field name="date_planned" widget="date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="comparision" string="Compare" attrs="{'invisible': [('state', 'not in', ['processed', 'done'])]}">
+                                <group>
+                                    <field name="edi_message_compare_line_ids" nolabel="1" readonly="1" force_save="1" widget="section_and_note_one2many">
+                                        <tree 
+                                            decoration-bf="not (po_line_qty == product_qty) or not(po_line_price_unit == price_unit) or not(po_line_date_departure == date_departure)"
+                                            decoration-muted="(po_line_qty == product_qty) and (po_line_price_unit == price_unit) and (po_line_date_departure == date_departure)" >
+                                            <field name="product_id"/>
+                                            <field name="po_line_qty" />
+                                            <field name="product_qty" />
+                                            <field name="po_line_price_unit" />
+                                            <field name="price_unit" />
+                                            <field name="po_line_date_departure" widget="date" />
+                                            <field name="date_departure" widget="date"/>
+                                            <field name="po_line_date_planned" widget="date"/>
+                                            <field name="date_planned" widget="date"/>
+                                            <field name="is_process" widget="boolean_toggle"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vendor EDI Message List View -->
+        <record id="vendor_edi_message_view_tree" model="ir.ui.view">
+            <field name="name">vendor.edi.message.view.tree</field>
+            <field name="model">vendor.edi.message</field>
+            <field name="arch" type="xml">
+                <tree string="EDI Message" sample="1">
+                    <field name="name" />
+                    <field name="purchase_id" />
+                    <field name="partner_id" />
+                    <field name="company_id"  groups="base.group_multi_company"/>
+                    <field name="message_type" widget="badge" />
+                    <field name="state" widget="badge" />
+                    <field name="user_id" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vendor EDI Message Kanban View -->
+        <record id="vendor_edi_message_view_kanban" model="ir.ui.view">
+            <field name="name">vendor.edi.message.view.kanban</field>
+            <field name="model">vendor.edi.message</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="state"  group_create="0" quick_create="0" archivable="false" sample="1">
+                    <field name="name"/>
+                    <field name="purchase_id"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="state"/>
+                    <field name="message_type"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong><field name="name"/></strong>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <span class="badge badge-pill"><t t-esc="record.state.value"/></span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong>Type: </strong><span class="badge badge-pill"><t t-esc="record.message_type.value"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="vendor_edi_message_action" model="ir.actions.act_window">
+            <field name="name">Vendor EDI Message</field>
+            <field name="res_model">vendor.edi.message</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create the new Vendor EDI Message.</p>
+            </field>
+        </record>
+
+        <menuitem
+        id="menu_vendor_edi_message"
+        action="vendor_edi_message_action"
+        name="Vendor EDI Message" parent="purchase.menu_procurement_management"
+        sequence="15"/>
+
+        <!-- EDI Message Lines List View -->
+        <record id="vendor_edi_message_line_tree" model="ir.ui.view">
+            <field name="name">vendor.edi.message.line.tree</field>
+            <field name="model">vendor.edi.message.line</field>
+            <field name="arch" type="xml">
+                <tree string="Vendor EDI Message Lines" create="0" edit="0" delete="0"
+                decoration-bf="not (po_line_qty == product_qty) or not(po_line_price_unit == price_unit) or not(po_line_date_departure == date_departure)"
+                decoration-muted="(po_line_qty == product_qty) and (po_line_price_unit == price_unit) and (po_line_date_departure == date_departure)">
+                    <field name="edi_message_id" invisible="1"/>
+                    <field name="name" invisible="1"/>
+                    <field name="purchase_id" />
+                    <field name="po_line_id" />
+                    <field name="partner_id" />
+                    <field name="status_line" />
+                    <field name="delayed_date" />
+                    <field name="partner_ref" />
+                    <field name="edi_message_id" />
+                    <field name="message_state"/>
+                    <field name="message_type"/>
+                    <field name="po_line_qty" optional="hide" />
+                    <field name="product_qty" optional="hide" />
+                    <field name="po_line_price_unit" optional="hide" />
+                    <field name="price_unit" optional="hide" />
+                    <field name="po_line_date_departure" widget="date" optional="hide" />
+                    <field name="date_departure" widget="date" optional="hide" />
+                    <field name="po_line_date_planned" widget="date" optional="hide" />
+                    <field name="date_planned" widget="date" optional="hide" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- EDI Message Lines Form View -->
+        <record id="vendor_edi_message_line_form" model="ir.ui.view">
+            <field name="name">vendor.edi.message.line.form2</field>
+            <field name="model">vendor.edi.message.line</field>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <form string="Vendor EDI Message Line" create="0" edit="0" delete="0">
+                    <sheet>
+                        <label for="description"/>
+                        <h1>
+                            <field name="description" required="1" class="oe_inline"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="po_line_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="product_id"/>
+                            </group>
+                            <group string="RFQ">
+                                <field name="po_line_qty" />
+                                <field name="po_line_price_unit" />
+                                <field name="po_line_date_planned" widget="date" />
+                                <field name="po_line_date_departure" widget="date" />
+                            </group>
+                            <group string="Updated Values">
+                                <field name="product_qty"/>
+                                <field name="price_unit"/>
+                                <field name="date_planned" widget="date" />
+                                <field name="date_departure" widget="date" />
+                            </group>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- EDI Message Lines Search View -->
+        <record id="vendor_edi_message_line_search" model="ir.ui.view">
+            <field name="name">vendor.edi.message.line.search</field>
+            <field name="model">vendor.edi.message.line</field>
+            <field name="arch" type="xml">
+                <search string="Search Vendor EDI Message">
+                    <field name="edi_message_id"/>
+                    <field name="product_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="vendor_edi_message_line_action" model="ir.actions.act_window">
+            <field name="name">Vendor EDI Message Lines</field>
+            <field name="res_model">vendor.edi.message.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Vendor EDI Message Lines will be displayed here.</p>
+            </field>
+        </record>
+
+        <menuitem
+            id="menu_vendor_edi_message_lines"
+            action="vendor_edi_message_line_action"
+            name="Vendor EDI Message Lines" parent="purchase.menu_procurement_management"
+            sequence="16"/>
+
+    </data>
+</odoo>
