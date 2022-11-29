@@ -1,5 +1,0 @@
-2. Please add filters for all values of order_reception_status in the portal view of purchase orders.
-
-
-- insert in portal view: when self.status_line = on_track, make field delayed_date readonly 
-
