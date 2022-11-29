@@ -305,7 +305,7 @@
                             <t t-if="message.message_type=='po' and line.status_line=='on_track'"><td></td></t>
                             <t t-if="message.message_type=='po'"><td></td></t>
                             <td></td>
-                            <td class="text-center">1</td>
+                            <td class="text-center"><t t-esc="sum(message.edi_message_line_ids.mapped('product_qty'))"/></td>
                         </tr>
                     </tbody>
                 </table>
